@@ -1,0 +1,100 @@
+[gd_scene load_steps=3 format=3 uid="uid://4wjvr2ul7jfm"]
+
+[ext_resource type="Script" path="res://addons/gmap/builder/MapBulder.gd" id="1_q1hxj"]
+[ext_resource type="Texture2D" uid="uid://ybtv4uu26fg8" path="res://addons/gmap/icons/Folder.svg" id="2_j6gqx"]
+
+[node name="MapBulder" type="ScrollContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_q1hxj")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="GodotPath" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="LineEdit" type="LineEdit" parent="VBoxContainer/GodotPath"]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Path to godot"
+
+[node name="Button" type="Button" parent="VBoxContainer/GodotPath"]
+layout_mode = 2
+icon = ExtResource("2_j6gqx")
+
+[node name="GamePath" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="LineEdit" type="LineEdit" parent="VBoxContainer/GamePath"]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Path to game's pck file"
+
+[node name="Button" type="Button" parent="VBoxContainer/GamePath"]
+layout_mode = 2
+icon = ExtResource("2_j6gqx")
+
+[node name="MapInformation" type="VBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="MapName" type="LineEdit" parent="VBoxContainer/MapInformation"]
+layout_mode = 2
+
+[node name="MapAuthor" type="LineEdit" parent="VBoxContainer/MapInformation"]
+layout_mode = 2
+
+[node name="MapVersion" type="LineEdit" parent="VBoxContainer/MapInformation"]
+layout_mode = 2
+
+[node name="MapOptions" type="VBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="Tree" type="Tree" parent="VBoxContainer/MapOptions"]
+layout_mode = 2
+size_flags_vertical = 3
+allow_reselect = true
+select_mode = 2
+
+[node name="CheckBox" type="CheckBox" parent="VBoxContainer/MapOptions/Tree"]
+layout_mode = 0
+offset_right = 24.0
+offset_bottom = 24.0
+text = "3D  map"
+
+[node name="GridContainer" type="GridContainer" parent="VBoxContainer"]
+layout_mode = 2
+columns = 3
+
+[node name="buildmap" type="Button" parent="VBoxContainer/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+focus_mode = 0
+text = "Build Map"
+
+[node name="Testmap" type="Button" parent="VBoxContainer/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+focus_mode = 0
+text = "Test Map"
+
+[node name="3Dmap" type="Button" parent="VBoxContainer/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+focus_mode = 0
+toggle_mode = true
+text = "3D Map"
+
+[node name="Button" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+focus_mode = 0
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(0, 0, 0.8, 1)
+text = "Advanced..."
+flat = true
