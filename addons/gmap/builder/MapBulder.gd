@@ -15,7 +15,7 @@ var editor_fs = EditorInterface.get_resource_filesystem()
 @onready var mapOptionsButton = $VBoxContainer/MapOptions
 @onready var mapOptionsContainer = $VBoxContainer/MapOptionsContainer
 @onready var maps = $VBoxContainer/HBoxContainer/OptionButton
-
+@onready var res = DirAccess.open("res://")
 func _ready():
 	var dir = DirAccess.open("res://")
 	if not dir.dir_exists("Maps"):
@@ -51,7 +51,29 @@ func updateSelector():
 		maps.add_item(jsonData.mapname)
 	
 
-
+func buildmap():
+	_updateMapInfo()
+	print("building map")
+	var writer = ZIPPacker.new()
+	var files = DirAccess.get_files_at("res://Maps/{mapname}".format(mapInfo))
+	var err := writer.open("res://{mapname}.gmap".format(mapInfo))
+	if err != OK:
+		return err
+	for file in files:
+		var filepath = "res://Maps/{0}/{1}".format([mapInfo.mapname,file])
+		var f = FileAccess.open(filepath,FileAccess.READ)
+		if file.ends_with(".tscn"):
+			writer.start_file(file.replace(".tscn",".scn"))
+			var scene = load(filepath)
+			ResourceSaver.save(scene,filepath.replace(".tscn",".scn"))
+			writer.write_file(FileAccess.get_file_as_bytes(filepath.replace(".tscn",".scn")))
+			res.remove(filepath.replace(".tscn",".scn"))
+		else:
+			writer.start_file(file)
+			writer.write_file(FileAccess.get_file_as_bytes(filepath))
+	editor_fs.scan()
+	print("done")
+	
 func creatMap():
 	_updateMapInfo()
 	var dir = DirAccess.open("res://")

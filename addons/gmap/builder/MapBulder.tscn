@@ -69,10 +69,6 @@ placeholder_text = "Map name"
 layout_mode = 2
 placeholder_text = "Map author"
 
-[node name="MapVersion" type="LineEdit" parent="VBoxContainer/MapInformation"]
-layout_mode = 2
-placeholder_text = "Map version"
-
 [node name="MapOptions" type="Button" parent="VBoxContainer"]
 layout_mode = 2
 text = "Map options"
