@@ -55,18 +55,6 @@ layout_mode = 2
 [node name="MapOptions" type="VBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
 
-[node name="Tree" type="Tree" parent="VBoxContainer/MapOptions"]
-layout_mode = 2
-size_flags_vertical = 3
-allow_reselect = true
-select_mode = 2
-
-[node name="CheckBox" type="CheckBox" parent="VBoxContainer/MapOptions/Tree"]
-layout_mode = 0
-offset_right = 24.0
-offset_bottom = 24.0
-text = "3D  map"
-
 [node name="GridContainer" type="GridContainer" parent="VBoxContainer"]
 layout_mode = 2
 columns = 3
