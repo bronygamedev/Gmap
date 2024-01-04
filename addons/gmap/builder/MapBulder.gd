@@ -51,8 +51,11 @@ func updateSelector():
 		maps.add_item(jsonData.mapname)
 	
 
-func buildmap():
+func buildMap():
 	_updateMapInfo()
+	if mapInfo.mapname == "" or  mapInfo.mapauthor == "" or  mapInfo.mapversion == "":
+		printerr("unconfugured")
+		return
 	print("building map")
 	var writer = ZIPPacker.new()
 	var files = DirAccess.get_files_at("res://Maps/{mapname}".format(mapInfo))
@@ -76,6 +79,9 @@ func buildmap():
 	
 func creatMap():
 	_updateMapInfo()
+	if mapInfo.mapname == "" or  mapInfo.mapauthor == "" or  mapInfo.mapversion == "":
+		printerr("unconfugured")
+		return
 	var dir = DirAccess.open("res://")
 	if not dir.dir_exists("Maps"):
 		dir .make_dir_recursive("Maps")
