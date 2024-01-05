@@ -14,6 +14,11 @@ config/name="Gmap"
 config/features=PackedStringArray("4.2", "Forward Plus")
 config/icon="res://icon.svg"
 
+[editor]
+
+version_control/plugin_name="GitPlugin"
+version_control/autoload_on_startup=true
+
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/gmap/plugin.cfg", "res://addons/plugin_refresher/plugin.cfg")

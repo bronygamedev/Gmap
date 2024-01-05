@@ -1,21 +1,22 @@
 @tool
 extends ScrollContainer
+class_name gmap_dock
 
+var map:String = "[select]"
 var dropupIcon = load("res://addons/gmap/icons/dropup.svg")
 var dropdownIcon = load("res://addons/gmap/icons/dropdown.svg")
-var mapInfo:Dictionary
+var editor_fs = EditorInterface.get_resource_filesystem()
+var mapInfo:gmapconf = gmapconf.new()
 var MapOptions:Dictionary = {
 	"is3D":false
 }
-var editor_fs = EditorInterface.get_resource_filesystem()
 
-@onready var mapName = $VBoxContainer/MapInformation/MapName
-@onready var mapAuthor = $VBoxContainer/MapInformation/MapAuthor
-@onready var mapVersion = $VBoxContainer/MapInformation/MapVersion
-@onready var mapOptionsButton = $VBoxContainer/MapOptions
-@onready var mapOptionsContainer = $VBoxContainer/MapOptionsContainer
+@onready var mapNameLine = $VBoxContainer/MapInformation/MapName
+@onready var mapAutorline = $VBoxContainer/MapInformation/MapAuthor
+@onready var mapVersion := [$VBoxContainer/MapInformation/GridContainer/MAJOR,$VBoxContainer/MapInformation/GridContainer/MINOR,$VBoxContainer/MapInformation/GridContainer/PATCH]
 @onready var maps = $VBoxContainer/HBoxContainer/OptionButton
 @onready var res = DirAccess.open("res://")
+
 func _ready():
 	var dir = DirAccess.open("res://")
 	if not dir.dir_exists("Maps"):
@@ -23,22 +24,25 @@ func _ready():
 	updateSelector()
 	editor_fs.scan()
 
-func _on_map_options_pressed():
-	mapOptionsContainer.visible = not mapOptionsContainer.visible
-	if mapOptionsContainer.visible:
-		mapOptionsButton.icon = dropupIcon
-	else :
-		mapOptionsButton.icon = dropdownIcon
 
-func _on_3d_map_toggled(toggled_on):
-	MapOptions.is3D = toggled_on
+func _on_map_selected(index):
+	map = maps.get_item_text(index)
+	if map == "[select]":
+		mapAutorline.text = ''
+		mapNameLine.text = ''
+		mapVersion[0].selected = 0
+		mapVersion[1].selected = 0
+		mapVersion[2].selected = 0
+		return
 
-func _updateMapInfo():
-	mapInfo = {
-		"mapname":mapName.text,
-		"mapauthor":mapAuthor.text,
-		"mapversion":mapVersion.text,
-	}
+	mapInfo = load("res://Maps/{0}/map.res".format([map]))
+	mapAutorline.text = mapInfo.author
+	mapNameLine.text = mapInfo.name
+	mapVersion[0].selected = mapInfo.version[0]
+	mapVersion[1].selected = mapInfo.version[1]
+	mapVersion[2].selected = mapInfo.version[2]
+	
+	
 
 ## updates the map selector
 func updateSelector():
@@ -46,57 +50,65 @@ func updateSelector():
 	maps.add_item("[select]")
 	var dirs = DirAccess.open("res://Maps/").get_directories()
 	for d in dirs:
-		var f = FileAccess.open("res://Maps/{0}/map.json".format([d]),FileAccess.READ)
-		var jsonData = JSON.parse_string(f.get_as_text())
-		maps.add_item(jsonData.mapname)
-	
+		mapInfo = load("res://Maps/{0}/map.res".format([d]))
+		maps.add_item(mapInfo.name)
+	_on_map_selected(0)
 
 func buildMap():
-	_updateMapInfo()
-	if mapInfo.mapname == "" or  mapInfo.mapauthor == "" or  mapInfo.mapversion == "":
-		printerr("unconfugured")
+	if map == "[select]":
+		printerr("please select a valid map")
 		return
 	print("building map")
 	var writer = ZIPPacker.new()
-	var files = DirAccess.get_files_at("res://Maps/{mapname}".format(mapInfo))
-	var err := writer.open("res://{mapname}.gmap".format(mapInfo))
+	var files = DirAccess.get_files_at("res://Maps/{0}".format([mapInfo.name]))
+	var err := writer.open("res://{0}.gmap".format([mapInfo.name]))
 	if err != OK:
 		return err
 	for file in files:
-		var filepath = "res://Maps/{0}/{1}".format([mapInfo.mapname,file])
+		var filepath = "res://Maps/{0}/{1}".format([mapInfo.name,file])
 		var f = FileAccess.open(filepath,FileAccess.READ)
-		if file.ends_with(".tscn"):
-			writer.start_file(file.replace(".tscn",".scn"))
-			var scene = load(filepath)
-			ResourceSaver.save(scene,filepath.replace(".tscn",".scn"))
-			writer.write_file(FileAccess.get_file_as_bytes(filepath.replace(".tscn",".scn")))
-			res.remove(filepath.replace(".tscn",".scn"))
-		else:
-			writer.start_file(file)
-			writer.write_file(FileAccess.get_file_as_bytes(filepath))
+		print(file)
+		match file.get_extension():
+			"tscn":
+				writer.start_file(file.replace(".tscn",".scn"))
+				var scene = load(filepath)
+				ResourceSaver.save(scene,filepath.replace(".tscn",".scn"))
+				writer.write_file(FileAccess.get_file_as_bytes(filepath.replace(".tscn",".scn")))
+				res.remove(filepath.replace(".tscn",".scn"))
+			_:
+				writer.start_file(file)
+				writer.write_file(FileAccess.get_file_as_bytes(filepath))
+		writer.close_file()
+		f.close()
 	editor_fs.scan()
+	writer.close()
 	print("done")
 	
 func creatMap():
-	_updateMapInfo()
-	if mapInfo.mapname == "" or  mapInfo.mapauthor == "" or  mapInfo.mapversion == "":
-		printerr("unconfugured")
+	if mapNameLine.text == "" or  mapAutorline.text == "":
+		printerr("unconfigured")
 		return
-	var dir = DirAccess.open("res://")
-	if not dir.dir_exists("Maps"):
-		dir .make_dir_recursive("Maps")
-	dir = DirAccess.open("res://Maps")
-	dir.make_dir_recursive(mapInfo.mapname)
+	mapInfo = gmapconf.new()
+	mapInfo.name = mapNameLine.text
+	mapInfo.author = mapAutorline.text
+	mapInfo.version[0] = mapVersion[0].selected
+	mapInfo.version[1] = mapVersion[1].selected
+	mapInfo.version[2] = mapVersion[2].selected
+	if not res.dir_exists("Maps"):
+		res.make_dir_recursive("Maps")
+	var dir = DirAccess.open("res://Maps")
+	dir.make_dir_recursive(mapInfo.name)
 	var node = Node3D if MapOptions.is3D else Node2D
 	var scene = PackedScene.new()
-	var jsonfile = FileAccess.open("res://Maps/{mapname}/map.json".format(mapInfo),FileAccess.WRITE)
-	jsonfile.store_string(JSON.stringify(mapInfo,"	"))
-	jsonfile.close()
+	ResourceSaver.save(mapInfo,"res://Maps/{0}/map.res".format([mapInfo.name]),ResourceSaver.FLAG_COMPRESS)
 	node = node.new()
-	node.name = mapInfo.mapname
+	node.name = mapInfo.name
 	scene.pack(node)
-	ResourceSaver.save(scene,"res://Maps/{mapname}/map.tscn".format(mapInfo))
+	ResourceSaver.save(scene,"res://Maps/{0}/map.tscn".format([mapInfo.name]))
 	editor_fs.scan()
 	updateSelector()
+	print("created map " + mapInfo.name)
+
+
 
 
