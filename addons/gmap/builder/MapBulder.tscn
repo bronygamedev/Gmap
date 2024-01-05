@@ -1,7 +1,6 @@
-[gd_scene load_steps=4 format=3 uid="uid://4wjvr2ul7jfm"]
+[gd_scene load_steps=3 format=3 uid="uid://4wjvr2ul7jfm"]
 
 [ext_resource type="Script" path="res://addons/gmap/builder/MapBulder.gd" id="1_q1hxj"]
-[ext_resource type="Texture2D" uid="uid://ybtv4uu26fg8" path="res://addons/gmap/icons/Folder.svg" id="2_j6gqx"]
 [ext_resource type="Texture2D" uid="uid://bi5igd0lksr43" path="res://addons/gmap/icons/refresh.svg" id="3_mr7vd"]
 
 [node name="MapBuilder" type="ScrollContainer"]
@@ -20,44 +19,18 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="GodotPath" type="HBoxContainer" parent="VBoxContainer"]
-layout_mode = 2
-
-[node name="LineEdit" type="LineEdit" parent="VBoxContainer/GodotPath"]
-layout_mode = 2
-size_flags_horizontal = 3
-placeholder_text = "Path to godot"
-
-[node name="Button" type="Button" parent="VBoxContainer/GodotPath"]
-layout_mode = 2
-icon = ExtResource("2_j6gqx")
-
-[node name="GamePath" type="HBoxContainer" parent="VBoxContainer"]
-layout_mode = 2
-
-[node name="LineEdit" type="LineEdit" parent="VBoxContainer/GamePath"]
-layout_mode = 2
-size_flags_horizontal = 3
-placeholder_text = "Path to game's pck file"
-
-[node name="Button" type="Button" parent="VBoxContainer/GamePath"]
-layout_mode = 2
-icon = ExtResource("2_j6gqx")
-
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
 
 [node name="OptionButton" type="OptionButton" parent="VBoxContainer/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
-item_count = 3
+item_count = 2
 selected = 0
 popup/item_0/text = "[select]"
 popup/item_0/id = 0
 popup/item_1/text = "a"
 popup/item_1/id = 1
-popup/item_2/text = "b"
-popup/item_2/id = 2
 
 [node name="Button" type="Button" parent="VBoxContainer/HBoxContainer"]
 layout_mode = 2
@@ -190,12 +163,6 @@ layout_mode = 2
 size_flags_horizontal = 3
 focus_mode = 0
 text = "Build Map"
-
-[node name="Testmap" type="Button" parent="VBoxContainer/GridContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-focus_mode = 0
-text = "Test Map"
 
 [node name="CreateMap" type="Button" parent="VBoxContainer/GridContainer"]
 layout_mode = 2
