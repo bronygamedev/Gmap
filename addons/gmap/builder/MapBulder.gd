@@ -72,6 +72,7 @@ func buildMap():
 			"tscn":
 				writer.start_file(file.replace(".tscn",".scn"))
 				var scene = load(filepath)
+				print(scene)
 				ResourceSaver.save(scene,filepath.replace(".tscn",".scn"))
 				writer.write_file(FileAccess.get_file_as_bytes(filepath.replace(".tscn",".scn")))
 				res.remove(filepath.replace(".tscn",".scn"))
