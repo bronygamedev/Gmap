@@ -18,9 +18,9 @@ var MapOptions:Dictionary = {
 @onready var res = DirAccess.open("res://")
 
 func _ready():
-	var dir = DirAccess.open("res://")
-	if not dir.dir_exists("Maps"):
-		dir .make_dir_recursive("Maps")
+
+	if not res.dir_exists("Maps"):
+		res.make_dir_recursive("Maps")
 	updateSelector()
 	editor_fs.scan()
 
