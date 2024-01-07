@@ -11,10 +11,8 @@ using Gmap is simple
  3. Press `Create map`
  4. edit your map. located in `Maps/<yourmapname>`
  5. press build. 
-    
 
 https://github.com/Kaifungamedev/Gmap/assets/110266485/a1d46ce6-b068-43b1-bcbb-ee0547383fcd
-
 
 That's it now you should see a .gmap file in the `res://` directory  
 > **NOTE**:
