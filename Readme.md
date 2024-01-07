@@ -12,6 +12,10 @@ using Gmap is simple
  4. edit your map. located in `Maps/<yourmapname>`
  5. press build. 
     
+
+https://github.com/Kaifungamedev/Gmap/assets/110266485/a1d46ce6-b068-43b1-bcbb-ee0547383fcd
+
+
 That's it now toy should see a .gmap file in the `res://` directory  
 > **NOTE**:
 > .gmap files will not show up in the fileSystem dock in godot unless you add `,gmap` at the end of `editor -> editor settings -> docks -> filesystem -> textfile_extensions`
