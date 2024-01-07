@@ -1,6 +1,6 @@
 # Gmap
 Gmap is a map bundler to help your community make maps with the full power of the godot engine 
-
+![](https://raw.githubusercontent.com/Kaifungamedev/Gmap/main/icon.svg)
 - [Gmap](#gmap)
   - [Use](#use)
 
@@ -19,3 +19,4 @@ https://github.com/Kaifungamedev/Gmap/assets/110266485/a1d46ce6-b068-43b1-bcbb-e
 That's it now you should see a .gmap file in the `res://` directory  
 > **NOTE**:
 > .gmap files will not show up in the fileSystem dock in godot unless you add `,gmap` at the end of `editor -> editor settings -> docks -> filesystem -> textfile_extensions`
+
