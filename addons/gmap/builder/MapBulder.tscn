@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://4wjvr2ul7jfm"]
 
 [ext_resource type="Script" path="res://addons/gmap/builder/MapBulder.gd" id="1_q1hxj"]
-[ext_resource type="Texture2D" uid="uid://bi5igd0lksr43" path="res://addons/gmap/icons/refresh.svg" id="3_mr7vd"]
+[ext_resource type="Texture2D" uid="uid://c3w31oumukmjk" path="res://addons/gmap/icons/refresh.svg" id="3_mr7vd"]
 
 [node name="MapBuilder" type="ScrollContainer"]
 custom_minimum_size = Vector2(200, 0)
@@ -24,20 +24,30 @@ layout_mode = 2
 text = "Map templates
 "
 
-[node name="maptemplate" type="HBoxContainer" parent="VBoxContainer"]
+[node name="mapTemplate" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
 
-[node name="OptionButton" type="OptionButton" parent="VBoxContainer/maptemplate"]
+[node name="OptionButton" type="OptionButton" parent="VBoxContainer/mapTemplate"]
 layout_mode = 2
 size_flags_horizontal = 3
-item_count = 1
+item_count = 3
 selected = 0
 popup/item_0/text = "[select]"
 popup/item_0/id = 0
+popup/item_1/text = "Basic3d"
+popup/item_1/id = 1
+popup/item_2/text = "Basic2d"
+popup/item_2/id = 2
 
-[node name="Button" type="Button" parent="VBoxContainer/maptemplate"]
+[node name="Button" type="Button" parent="VBoxContainer/mapTemplate"]
 layout_mode = 2
 icon = ExtResource("3_mr7vd")
+
+[node name="BuildTemplate" type="Button" parent="VBoxContainer"]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Build Template"
 
 [node name="Label" type="Label" parent="VBoxContainer"]
 layout_mode = 2
@@ -50,10 +60,12 @@ layout_mode = 2
 [node name="OptionButton" type="OptionButton" parent="VBoxContainer/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
-item_count = 1
+item_count = 2
 selected = 0
 popup/item_0/text = "[select]"
 popup/item_0/id = 0
+popup/item_1/text = "a"
+popup/item_1/id = 1
 
 [node name="Button" type="Button" parent="VBoxContainer/HBoxContainer"]
 layout_mode = 2
@@ -181,26 +193,30 @@ popup/item_10/id = 9
 layout_mode = 2
 columns = 3
 
-[node name="Buildmap" type="Button" parent="VBoxContainer/GridContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-focus_mode = 0
-text = "Build Map"
-
 [node name="CreateMap" type="Button" parent="VBoxContainer/GridContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 focus_mode = 0
 text = "Create Map"
 
+[node name="Buildmap" type="Button" parent="VBoxContainer/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+focus_mode = 0
+text = "Build Map"
+
 [node name="UpdateMap" type="Button" parent="VBoxContainer/GridContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Update"
 
-[connection signal="item_selected" from="VBoxContainer/maptemplate/OptionButton" to="." method="_on_map_selected"]
-[connection signal="pressed" from="VBoxContainer/maptemplate/Button" to="." method="updateSelector"]
+[node name="HTTPRequest" type="HTTPRequest" parent="VBoxContainer"]
+use_threads = true
+timeout = 10.0
+
+[connection signal="item_selected" from="VBoxContainer/mapTemplate/OptionButton" to="." method="_on_template_option_item_selected"]
+[connection signal="pressed" from="VBoxContainer/mapTemplate/Button" to="." method="updateTemplateSelector"]
 [connection signal="item_selected" from="VBoxContainer/HBoxContainer/OptionButton" to="." method="_on_map_selected"]
-[connection signal="pressed" from="VBoxContainer/HBoxContainer/Button" to="." method="updateSelector"]
-[connection signal="pressed" from="VBoxContainer/GridContainer/Buildmap" to="." method="buildMap"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/Button" to="." method="updateMapSelector"]
 [connection signal="pressed" from="VBoxContainer/GridContainer/CreateMap" to="." method="creatMap"]
+[connection signal="pressed" from="VBoxContainer/GridContainer/Buildmap" to="." method="buildMap"]

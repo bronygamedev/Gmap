@@ -1,7 +1,9 @@
+@icon("res://addons/gmap/icon.png")
 extends Node
 class_name gmap
 
-func loadmap(path:String,installdir = "user://Maps"):
+func installmap(path:String):
+	var installdir = "user://Maps"
 	var dir = DirAccess.open("user://")
 	if not dir.dir_exists("Maps"):
 		dir .make_dir_recursive("Maps")

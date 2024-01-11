@@ -2,28 +2,53 @@
 extends ScrollContainer
 class_name gmap_dock
 
+var templates:Maps
+var templatesNames:Array[String]
+var selectedTemplate
+var template:PackedByteArray
 var map:String = "[select]"
 var dropupIcon = load("res://addons/gmap/icons/dropup.svg")
 var dropdownIcon = load("res://addons/gmap/icons/dropdown.svg")
 var editor_fs = EditorInterface.get_resource_filesystem()
 var mapInfo:gmapconf = gmapconf.new()
-var MapOptions:Dictionary = {
-	"is3D":false
-}
+var gotTemplates:bool = false 
+var haveTemplate:bool = false
 
+@onready var http := $VBoxContainer/HTTPRequest
 @onready var mapNameLine = $VBoxContainer/MapInformation/MapName
 @onready var mapAutorline = $VBoxContainer/MapInformation/MapAuthor
 @onready var mapVersion := [$VBoxContainer/MapInformation/GridContainer/MAJOR,$VBoxContainer/MapInformation/GridContainer/MINOR,$VBoxContainer/MapInformation/GridContainer/PATCH]
+@onready var templateSelector = $VBoxContainer/mapTemplate/OptionButton
 @onready var maps = $VBoxContainer/HBoxContainer/OptionButton
 @onready var res = DirAccess.open("res://")
+@onready var user = DirAccess.open("user://")
 
 func _ready():
-
+	editor_fs.filesystem_changed.connect(_on_file_changed)
 	if not res.dir_exists("Maps"):
 		res.make_dir_recursive("Maps")
-	updateSelector()
+	updateMapSelector()
+	getTemplates()
+	updateTemplateSelector()
 	editor_fs.scan()
 
+func _on_templates_request_complete(result, response_code, headers, body):
+	if user.file_exists("templates.tres"):
+		user.remove("templates.tres")
+	var file = FileAccess.open("user://templates.tres",FileAccess.WRITE_READ)
+	file.store_buffer(body)
+	file.close()
+	templates = load("user://templates.tres")
+	gotTemplates = true
+	http.request_completed.disconnect(_on_templates_request_complete)
+	
+func _on_template_get_request_complete(result, response_code, headers, body):
+	template = body
+	haveTemplate = true
+	http.request_completed.disconnect(_on_template_get_request_complete)
+
+func _on_template_option_item_selected(index):
+	selectedTemplate = templateSelector.get_item_text(index)
 
 func _on_map_selected(index):
 	map = maps.get_item_text(index)
@@ -34,18 +59,34 @@ func _on_map_selected(index):
 		mapVersion[1].selected = 0
 		mapVersion[2].selected = 0
 		return
-
 	mapInfo = load("res://Maps/{0}/map.res".format([map]))
 	mapAutorline.text = mapInfo.author
 	mapNameLine.text = mapInfo.name
 	mapVersion[0].selected = mapInfo.version[0]
 	mapVersion[1].selected = mapInfo.version[1]
 	mapVersion[2].selected = mapInfo.version[2]
-	
-	
+
+func _on_file_changed():
+	if not res.dir_exists("Maps"):
+		res.make_dir_recursive("Maps")
+	editor_fs.scan()
+
+func getTemplates():
+	http.request_completed.connect(_on_templates_request_complete)
+	http.request("https://raw.githubusercontent.com/Kaifungamedev/GmapTemplates/main/templates.tres")
+## updates the template selector
+func updateTemplateSelector():
+	templates = load("user://templates.tres")
+	while not gotTemplates:
+		await get_tree().process_frame
+	templateSelector.clear()
+	templateSelector.add_item("[select]")
+	for map in templates.maps:
+		print(map)
+		templateSelector.add_item(map)
 
 ## updates the map selector
-func updateSelector():
+func updateMapSelector():
 	maps.clear()
 	maps.add_item("[select]")
 	var dirs = DirAccess.open("res://Maps/").get_directories()
@@ -89,6 +130,8 @@ func creatMap():
 	if mapNameLine.text == "" or  mapAutorline.text == "":
 		printerr("unconfigured")
 		return
+	if selectedTemplate == null or selectedTemplate == "[select]":
+		printerr("Please select a map")
 	mapInfo = gmapconf.new()
 	mapInfo.name = mapNameLine.text
 	mapInfo.author = mapAutorline.text
@@ -99,17 +142,14 @@ func creatMap():
 		res.make_dir_recursive("Maps")
 	var dir = DirAccess.open("res://Maps")
 	dir.make_dir_recursive(mapInfo.name)
-	var node = Node3D if MapOptions.is3D else Node2D
-	var scene = PackedScene.new()
+	http.request_completed.connect(_on_template_get_request_complete)
+	http.request("https://raw.githubusercontent.com/Kaifungamedev/GmapTemplates/main/{0}.tscn".format([selectedTemplate]))
+	while not haveTemplate:
+		await get_tree().process_frame
+	var mapfile := FileAccess.open("res://Maps/{0}/map.tscn".format([mapInfo.name]),FileAccess.WRITE)
+	mapfile.store_buffer(template)
+	mapfile.close()
 	ResourceSaver.save(mapInfo,"res://Maps/{0}/map.res".format([mapInfo.name]),ResourceSaver.FLAG_COMPRESS)
-	node = node.new()
-	node.name = mapInfo.name
-	scene.pack(node)
-	ResourceSaver.save(scene,"res://Maps/{0}/map.tscn".format([mapInfo.name]))
 	editor_fs.scan()
-	updateSelector()
+	updateMapSelector()
 	print("created map " + mapInfo.name)
-
-
-
-
