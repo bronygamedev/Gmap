@@ -24,7 +24,6 @@ var haveTemplate:bool = false
 @onready var user = DirAccess.open("user://")
 
 func _ready():
-	editor_fs.filesystem_changed.connect(_on_file_changed)
 	if not res.dir_exists("Maps"):
 		res.make_dir_recursive("Maps")
 	updateMapSelector()
@@ -74,6 +73,7 @@ func _on_file_changed():
 func getTemplates():
 	http.request_completed.connect(_on_templates_request_complete)
 	http.request("https://raw.githubusercontent.com/Kaifungamedev/GmapTemplates/main/templates.tres")
+
 ## updates the template selector
 func updateTemplateSelector():
 	templates = load("user://templates.tres")
@@ -82,7 +82,6 @@ func updateTemplateSelector():
 	templateSelector.clear()
 	templateSelector.add_item("[select]")
 	for map in templates.maps:
-		print(map)
 		templateSelector.add_item(map)
 
 ## updates the map selector
@@ -108,7 +107,6 @@ func buildMap():
 	for file in files:
 		var filepath = "res://Maps/{0}/{1}".format([mapInfo.name,file])
 		var f = FileAccess.open(filepath,FileAccess.READ)
-		print(file)
 		match file.get_extension():
 			"tscn":
 				writer.start_file(file.replace(".tscn",".scn"))
@@ -127,6 +125,8 @@ func buildMap():
 	print("done")
 	
 func creatMap():
+	if not res.dir_exists("Maps"):
+		res.make_dir_recursive("Maps")
 	if mapNameLine.text == "" or  mapAutorline.text == "":
 		printerr("unconfigured")
 		return
